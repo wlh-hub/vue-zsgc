@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>demo01</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css"/>
+		<script src="./lib/vue.js"></script>
+		<style>
+        .course{
+            width: 1200px;
+            margin: 50px auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .course .editPanel{
+            border-bottom: 1px solid #ccc;
+            padding: 20px;
+        }
+        .course .editPanel label{
+            margin-right: 20px;
+        }
+        .course .editPanel input{            
+            width: 150px;
+            padding: 5px 10px;
+            font-size: 14px;
+            border-radius: 4px;
+            outline: none;
+            border: 1px solid #aaa;
+        }
+        .course .editPanel input[type=button]{
+            width: 70px;
+            background-color: rgb(50,120,180);
+            padding: 5px 20px;
+            letter-spacing: 5px;
+            color: #eee;
+        }
+        .course .editPanel .search{
+            margin-left: 50px;
+        }
+        .course .list{
+            padding: 20px;
+        }
+        .course .list table{
+            width: 100%;
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+        }
+        .course .list table tr td,.course .list table tr th{
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+            font-size: 14px;
+            line-height: 14px;
+        }
+        .course .list table tr td a{
+            color: #369;
+            text-decoration: none;
+        }
+        .course .list table .firstCol{
+            width: 50px;
+        }
+    </style>
+	</head>
+	<body>
+		<div class="course" id="course">
+			<div class="editPanel">
+				<label for="">序号：<input type="text" v-model="id"></label>
+				<label for="">课程：<input type="text" v-model="cName"></label>	
+				<label for="">教师：<input type="text" v-model="teacher" @keyup.enter="add"></label>
+				<input type="button" value="添加" @click="add">
+				<lable for="" class="search">搜索：<input type="text" v-model="keyword" @keyup="search(keyword)"></lable>
+			</div>
+			<div class="list">
+				<table>
+					<thread>
+						<tr>
+							<th class="firstCol">序号</th>
+							<th>课程</th>
+							<th>教师</th>
+							<th>时间</th>
+							<th>操作</th>
+						</tr>
+					</thread>
+					<tbody>
+						<tr v-for="item in search(keyword)" :key="item.id">
+							<td>{{item.id}}</td>
+							<td>{{item.cName}}</td>
+							<td>{{item.teacher}}</td>
+							<td>{{item.time | timeFormat('cn')}}</td>
+							<td><a href=""  @click.prevent="del(item.id)">删除</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</body>
+	<script>
+		var vm=new Vue({
+			el:'#course',
+			data:{
+				id:'',
+				cName:'',
+				teacher:'',
+				time:new Date(),
+				keyword:'',
+				list:[
+					{'id':1,'cName':'马哲','teacher':'李大嘴','time':'2018-9-3'},
+					{'id':2,'cName':'数据库','teacher':'牛红惠','time':'2018-9-3'},
+					{'id':3,'cName':'js','teacher':'东哥','time':'2018-9-3'}
+				]
+			},
+			methods:{
+				add:function(){
+					if(this.id.length>0&&this.cName.length>0&&this.teacher.length>0){
+						this.list.push({'id':this.id,'cName':this.cName,'teacher':this.teacher,'time':this.time})	
+					}else{
+						alert('请填入完整的课程信息');
+					}
+				},
+				del:function(id){
+					for(var i=0;i<this.list.length;i++){
+						if(this.list[i].id==id){
+							this.list.splice(i,1);
+						}
+					}
+					},
+				search:function(word){
+					var result=[];
+					for(var i=0;i<this.list.length;i++){
+						if(this.list[i].cName.toLowerCase().indexOf(word.toLowerCase())>-1){
+							result.push(this.list[i]);
+						}
+					}
+					return result;
+				},
+			
+		},
+		    filters:{
+			    timeFormat:function(dateStr,pattern){
+				var date=new Date(dateStr);
+				var year=date.getFullYear();
+				var month=date.getMonth()+1;
+				var day=date.getDate();
+				var result='';
+				if(pattern){
+					switch(pattern.toLowerCase()){
+						case 'cn':
+						result=year+'年'+month+'月'+day+'日';
+						break;
+						case 'en':
+						result= year+'-'+month+'-'+day;
+						break;
+						default:
+						result=year+'.'+month+'.'+day;
+						break;
+					  }
+					}else{
+						result=year+'.'+month+'.'+day;
+				}
+					return result;
+			}
+		}
+		})
+	</script>
+</html>
